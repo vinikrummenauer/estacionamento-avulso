@@ -14,6 +14,7 @@ const PaginaPrincipal = () => {
     <div className="content2 w-50">
       <h2>ESTACIONE COM CRÉDITO</h2>
       <p>Crie sua conta e estacione com crédito, clique no botão abaixo!</p>
+      <a href="https://estacionamentorotativo.conseprotaquara.com.br">
       <Button
         variant="gradient"
         size="md"
@@ -22,12 +23,14 @@ const PaginaPrincipal = () => {
       >
         Acessar o app ‎ ‎
       </Button>
+        </a>
     </div>
   </div>
   <div className="div2 text-black">
     <div className="content">
       <h2>ESTACIONE RÁPIDO</h2>
       <p>Realize um estacionamento de forma simples e rápida.</p>
+      <a href="https://avulso.conseprotaquara.com.br">
       <Button
         variant="gradient"
         size="md"
@@ -36,6 +39,7 @@ const PaginaPrincipal = () => {
       >
         Ir para o site
       </Button>
+        </a>
     </div>
     <div className="image-container2">
       <img src="../../assets/img/carroconsepro.png" alt="Exemplo de imagem" />
