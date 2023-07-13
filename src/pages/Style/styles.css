@@ -13142,6 +13142,18 @@ textarea.form-control-lg {
     box-shadow: 0 8px 8px -4px lightblue;
 }
 
+.corTempo {
+    background: #3a58c8 !important;
+    color: white;
+    border: 1px solid rgba(43, 135, 200, .80);
+}
+
+.corTempoSelecionado {
+    background: white !important;
+    color: black !important;
+    border: 2px solid green  !important;
+}
+
 .bg-green-50 {
     background-color: green !important;
 }

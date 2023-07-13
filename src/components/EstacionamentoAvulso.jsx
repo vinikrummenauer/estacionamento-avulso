@@ -4,7 +4,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import VoltarComponente from '../util/VoltarComponente';
 import ModalPix from './ModalPix';
 import SidebarAvulso from './SidebarAvulso';
-import { Button } from '@mantine/core';
+import { Button, Divider, Grid, Group, Text } from '@mantine/core';
+import { IconCheck, IconChecks, IconCheckupList } from '@tabler/icons-react';
 
 const EstacionamentoAvulso = () => {
   const [opened, { open, close }] = useDisclosure(false);
@@ -26,6 +27,22 @@ const EstacionamentoAvulso = () => {
   const [onOpen, setOnOpen] = useState(false);
   const [cont, setCont] = useState(0);
   const [teste, setTeste] = useState("");
+  const [selectedButton, setSelectedButton] = useState("01:00:00");
+  const [loader, setLoader] = useState(false);
+
+  const handleButtonClick = (buttonIndex) => {
+    setSelectedButton(buttonIndex);
+    const tempo1 = buttonIndex;
+    if (tempo1 === "02:00:00") {
+      setValorCobranca2(valorCobranca * 2);
+    } else if (tempo1 === "01:00:00") {
+      setValorCobranca2(valorCobranca);
+    } else if (tempo1 === "01:30:00") {
+      setValorCobranca2(valorCobranca * 1.5);
+    } else if (tempo1 === "00:30:00") {
+      setValorCobranca2(valorCobranca / 2);
+    }
+  };
 
   function validarPlaca(placa) {
     const regexPlacaAntiga = /^[a-zA-Z]{3}\d{4}$/;
@@ -65,26 +82,6 @@ const EstacionamentoAvulso = () => {
       setPlaca("placa");
       setLimite(8);
       setInputVazio("inputvazio3");
-    }
-  };
-
-  const atualiza = () => {
-    const tempoo = document.getElementById("tempos").value;
-
-    setTempo(tempoo);
-    if (tempoo === "02:00:00") {
-      setValorCobranca2(valorCobranca * 2);
-    } else if (tempoo === "01:00:00") {
-      setValorCobranca2(valorCobranca);
-    } else if (tempoo === "01:30:00"){
-      setValorCobranca2(valorCobranca*1.5);
-    }
-    else if (tempoo === "00:30:00") {
-      setValorCobranca2(valorCobranca / 2);
-    } else if (tempoo === "00:10:00") {
-      setValorCobranca2(valorCobranca * 0);
-    } else {
-      setValorCobranca2(valorCobranca * 0);
     }
   };
 
@@ -163,6 +160,7 @@ const EstacionamentoAvulso = () => {
         return;
       }
     }
+    setLoader(true);
     const valor = valorcobranca2.toString();
     const valor2 = parseFloat(valor.replace(",", ".")).toFixed(2);
     const campo = {
@@ -176,6 +174,7 @@ const EstacionamentoAvulso = () => {
       valor: valor2,
       campo: JSON.stringify(campo),
     }).then((resposta) => {
+      setLoader(false);
       if (resposta.data.msg.resultado) {
         setData(resposta.data.data);
         setTxId(resposta.data.data.txid);
@@ -213,7 +212,7 @@ const EstacionamentoAvulso = () => {
       } else {
         setSuccess(false);
         setEstado(true);
-        setMensagem("Erro ao registrar estacionamento");
+        setMensagem(resposta.data.msg.msg);
       }
     }).catch((error) => {
       console.log(error)}
@@ -223,23 +222,22 @@ const EstacionamentoAvulso = () => {
   return (
     <>
     <SidebarAvulso />
-    <main className="content">
     <div className="container mb-4">
-      <div
-        className="row justify-content-center form-bg-image"
-        data-background-lg="../../assets/img/illustrations/signin.svg"
-      >
+      <div className="row justify-content-center form-bg-image" data-background-lg="../../assets/img/illustrations/signin.svg">
         <div className="col-12 d-flex align-items-center justify-content-center">
-          <div className="bg-gray-50 shadow border-0 rounded border-light p-4 p-lg-5 w-100 fmxw-500">
-            <div className="h6 mt-1 align-items-left text-start">
-              Registrar estacionamento
+          <div className="bg-white shadow border-0 rounded border-light p-4 p-lg-5 w-100 fmxw-500">
+            <div className="h6 mt-1 mb-4 align-items-left text-start">
+              Estacionamento avulso
             </div>
+
+            <Divider my="sm" size="md" variant="dashed" />
+
             <div className="row">
-              <div className="col-9 px-3 mt-4 pt-2">
+              <div className="col-9 px-3 mt-1 pt-2">
                 <h6>Placa estrangeira/Outra</h6>
               </div>
               <div className="col-3 px-3">
-                <div className="form-check form-switch gap-2 d-md-block">
+                <div className="form-check3 mt-2 form-switch gap-2 d-md-block">
                   <input
                     className="form-check-input align-self-end"
                     type="checkbox"
@@ -263,42 +261,66 @@ const EstacionamentoAvulso = () => {
                 maxLength={limite}
               />
             </div>
-            <div
-              className="text-start mt-3 mb-1 px-2"
-              onChange={() => {
-                atualiza();
-              }}
-            >
-              <h6>Selecione o tempo:</h6>
-              <select
-                className="form-select form-select-lg mb-2"
-                aria-label=".form-select-lg example"
-                id="tempos"
-                defaultValue="01:00:00"
-              >
-                {user2 === "monitor" ? (
-                  <option value="00:10:00">Tolerância</option>
-                ) : null}
-                <option value="00:30:00">30 Minutos</option>
-                <option value="01:00:00">60 Minutos</option>
-                <option value="01:30:00">90 Minutos</option>
-                <option value="02:00:00">120 Minutos</option>
-              </select>
+
+            <Divider my="sm" size="md" variant="dashed" />
+
+              <div className="h6 mt-3 mx-2">
+                  <Group position="apart">
+                  <h6 className="mb-3"><small>Determine o tempo (minutos): </small></h6>
+                  </Group>
+                  <Grid>
+                    <Grid.Col span={3}>
+                      <button 
+                        type="button" className={`btn icon-shape icon-shape rounded align-center text-white ${
+                        selectedButton === "00:30:00" ? 'corTempoSelecionado' : 'corTempo'}`}
+                        onClick={() => handleButtonClick("00:30:00")}>
+                        <Text fz="lg" weight={700}>30</Text>
+                      </button>
+                    </Grid.Col>
+                    <Grid.Col span={3}>
+                      <button
+                        type="button" className={`btn icon-shape icon-shape rounded align-center text-white ${
+                        selectedButton === "01:00:00" ? 'corTempoSelecionado' : 'corTempo'}`} 
+                        onClick={() => handleButtonClick("01:00:00")}>
+                        <Text fz="lg" weight={700}>60</Text>
+                      </button>
+                    </Grid.Col>
+                    <Grid.Col span={3}>
+                      <button
+                        type="button" className={`btn icon-shape icon-shape rounded align-center text-white ${
+                        selectedButton === "01:30:00" ? 'corTempoSelecionado' : 'corTempo'}`}
+                        onClick={() => handleButtonClick("01:30:00")}>
+                        <Text fz="lg" weight={700}>90</Text>
+                      </button>
+                    </Grid.Col>
+                    <Grid.Col span={3}>
+                      <button
+                        type="button" className={`btn icon-shape icon-shape rounded align-center text-white ${
+                        selectedButton === "02:00:00" ? 'corTempoSelecionado' : 'corTempo'}`}
+                        onClick={() => handleButtonClick("02:00:00")}>
+                        <Text fz="lg" weight={700}>120</Text>
+                      </button>
+                    </Grid.Col>
+                  </Grid>
+                <div className="mt-3">
               <p id="tempoCusto" className="text-end">
                 {" "}
                 Valor a ser cobrado: R$ {valorcobranca2}{" "}
               </p>
+              </div>
             </div>
 
-            <div className="mb-2 mt-3 gap-2 d-md-block">
-              <VoltarComponente space={true}/>
+            <div className="mb-2 mt-4 gap-2 d-md-block">
               <Button
                 onClick={() => {
                   fazerPix();
                 }}
-                className="bg-blue-50"
+                variant="gradient" gradient={{ from: 'teal', to: 'indigo', deg: 300 }}
                 size="md"
                 radius="md"
+                rightIcon={ <IconCheck size={20} /> }
+                loaderPosition="right"
+                loading={loader}
               >
                 Registrar
               </Button>
@@ -322,7 +344,6 @@ const EstacionamentoAvulso = () => {
       </div>
       <ModalPix qrCode={data.brcode} status={notification} mensagemPix={pixExpirado} onOpen={onOpen} />
     </div>
-    </main>
     </>
   )
 }
